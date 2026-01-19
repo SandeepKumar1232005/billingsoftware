@@ -17,9 +17,6 @@ A desktop-based Billing Software application built with Python, Tkinter, and SQL
 - **Database**
   - SQLite backend for persistent storage of products and invoices.
 
-## Screenshots
-
-*(Add screenshots of your application here)*
 
 ## Installation & Usage
 
