@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1>Product Management</h1>
+</div>
+
+<div style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+    <h3>Add New Product</h3>
+    <form action="{{ url_for('add_product') }}" method="POST"
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: end;">
+        <div class="form-group" style="margin: 0;">
+            <label>Product Name</label>
+            <input type="text" name="name" required>
+        </div>
+        <div class="form-group" style="margin: 0;">
+            <label>Category</label>
+            <select name="category" required>
+                <option value="" disabled selected>Select Category</option>
+                <option value="DAIRY">DAIRY</option>
+                <option value="GROCERY">GROCERY</option>
+                <option value="HOUSEHOLD">HOUSEHOLD</option>
+                <option value="SNACKS">SNACKS</option>
+                <option value="BEVERAGES">BEVERAGES</option>
+                <option value="PERSONAL CARE">PERSONAL CARE</option>
+            </select>
+        </div>
+        <div class="form-group" style="margin: 0;">
+            <label>Price</label>
+            <input type="number" step="0.01" name="price" required>
+        </div>
+        <div class="form-group" style="margin: 0;">
+            <label>Stock</label>
+            <input type="number" name="stock" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Product</button>
+    </form>
+</div>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.id }}</td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.category }}</td>
+                <td>₹{{ "%.2f"|format(product.price) }}</td>
+                <td class="{% if product.stock <= 5 %}low-stock{% endif %}">
+                    {{ product.stock }}
+                    {% if product.stock <= 5 %} <span class="badge-warning">Low Stock</span>
+                        {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('edit_product', id=product.id) }}" class="btn-primary"
+                        style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; margin-right: 5px; text-decoration: none;">Edit</a>
+                    <a href="{{ url_for('delete_product', id=product.id) }}" class="btn-danger"
+                        style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

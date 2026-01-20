@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>New Billing</h1>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-top: 2rem;">
+
+    <!-- Billing Form -->
+    <div style="background: white; padding: 1.5rem; border-radius: 8px;">
+        <form action="{{ url_for('create_bill') }}" method="POST" id="billingForm">
+            <div class="form-group">
+                <label>Customer Name</label>
+                <input type="text" name="customer_name" required placeholder="Enter Customer Name">
+            </div>
+
+            <h3 style="margin: 1.5rem 0 1rem;">Add Items</h3>
+            <div id="items-container">
+                <div class="item-row" style="display: flex; gap: 10px; margin-bottom: 1rem; align-items: end;">
+                    <div style="flex: 2;">
+                        <label>Product</label>
+                        <select name="product_id[]" required onchange="updatePrice(this)">
+                            <option value="">Select Product...</option>
+                            {% for p in products %}
+                            <option value="{{ p.id }}" data-price="{{ p.price }}">{{ p.name }} (Stock: {{ p.stock }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label>Quantity</label>
+                        <input type="number" name="quantity[]" min="1" value="1" required onchange="calculateTotal()">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>Total</label>
+                        <input type="text" class="line-total" readonly value="0.00" style="background: #f9fafb;">
+                    </div>
+                    <button type="button" class="btn-danger" style="padding: 0.75rem;"
+                        onclick="removeRow(this)">X</button>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-secondary" onclick="addRow()"
+                style="background: #64748b; color: white;">+ Add Another Item</button>
+
+            <div style="margin-top: 2rem; border-top: 1px solid #e5e7eb; padding-top: 1.5rem;">
+                <div class="form-group">
+                    <label>Discount</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="number" name="discount" id="discountInput" value="0" min="0" step="0.01"
+                            onchange="calculateTotal()" style="flex: 2;">
+                        <select name="discount_type" id="discountType" onchange="calculateTotal()" style="flex: 1;">
+                            <option value="flat">Flat (₹)</option>
+                            <option value="percent">Percent (%)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <div style="display: flex; gap: 20px; align-items: center;">
+                        <label style="display: flex; align-items: center; gap: 5px; font-weight: normal; margin: 0;">
+                            <input type="radio" name="payment_method" value="Cash" checked style="width: auto;"> Cash
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px; font-weight: normal; margin: 0;">
+                            <input type="radio" name="payment_method" value="UPI" style="width: auto;"> UPI
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px; font-weight: normal; margin: 0;">
+                            <input type="radio" name="payment_method" value="Card" style="width: auto;"> Card
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <hr style="margin: 2rem 0; border: 0; border-top: 1px solid #e5e7eb;">
+            <button type="submit" class="btn btn-success" style="width: 100%; font-size: 1.1rem;">Generate Bill</button>
+        </form>
+    </div>
+
+    <!-- Summary -->
+    <div style="background: white; padding: 1.5rem; border-radius: 8px; height: fit-content;">
+        <h3>Bill Summary</h3>
+        <div style="margin-top: 1rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+            <span>Subtotal:</span>
+            <span id="subtotalDisplay">₹0.00</span>
+        </div>
+        <div style="margin-top: 0.5rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+            <span>Tax (5%):</span>
+            <span id="taxDisplay">₹0.00</span>
+        </div>
+        <div style="margin-top: 0.5rem; color: #10b981; display: flex; justify-content: space-between;">
+            <span>Discount:</span>
+            <span id="discountDisplay">-₹0.00</span>
+        </div>
+        <div
+            style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; font-size: 1.25rem; display: flex; justify-content: space-between; font-weight: bold;">
+            <span>Grand Total:</span>
+            <span id="grandTotal">₹0.00</span>
+        </div>
+    </div>
+</div>
+
+<!-- Minimal JS for dynamic rows only -->
+<script>
+    function updatePrice(select) {
+        const row = select.closest('.item-row');
+        const price = parseFloat(select.options[select.selectedIndex].dataset.price || 0);
+        row.dataset.price = price;
+        calculateTotal();
+    }
+
+    function calculateTotal() {
+        let subtotal = 0;
+        document.querySelectorAll('.item-row').forEach(row => {
+            const price = parseFloat(row.dataset.price || 0);
+            const qty = parseInt(row.querySelector('input[name="quantity[]"]').value || 0);
+            const lineTotal = price * qty;
+            row.querySelector('.line-total').value = lineTotal.toFixed(2);
+            subtotal += lineTotal;
+        });
+
+        // Tax (5%)
+        const tax = subtotal * 0.05;
+
+        // Discount
+        const discountVal = parseFloat(document.getElementById('discountInput').value || 0);
+        const discountType = document.getElementById('discountType').value;
+        let discount = 0;
+
+        if (discountType === 'percent') {
+            discount = (subtotal * discountVal) / 100;
+        } else {
+            discount = discountVal;
+        }
+
+        let grandTotal = subtotal + tax - discount;
+        if (grandTotal < 0) grandTotal = 0;
+
+        // Update UI
+        document.getElementById('subtotalDisplay').innerText = '₹' + subtotal.toFixed(2);
+        document.getElementById('taxDisplay').innerText = '₹' + tax.toFixed(2);
+        document.getElementById('discountDisplay').innerText = '-₹' + discount.toFixed(2);
+        document.getElementById('grandTotal').innerText = '₹' + grandTotal.toFixed(2);
+    }
+
+    function addRow() {
+        const container = document.getElementById('items-container');
+        const row = container.children[0].cloneNode(true);
+        row.querySelector('input[name="quantity[]"]').value = 1;
+        row.querySelector('.line-total').value = '0.00';
+        row.querySelector('select').value = '';
+        row.dataset.price = 0;
+        container.appendChild(row);
+    }
+
+    function removeRow(btn) {
+        const container = document.getElementById('items-container');
+        if (container.children.length > 1) {
+            btn.closest('.item-row').remove();
+            calculateTotal();
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ bill.invoice_number }}</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .invoice-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        th,
+        td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .total-section {
+            float: right;
+            width: 300px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+        }
+
+        .grand-total {
+            font-weight: bold;
+            font-size: 1.25rem;
+            border-top: 2px solid #333;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+        }
+
+        .print-btn {
+            background: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        @media print {
+            .print-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Supermarket Invoice</h1>
+        <p>Thank you for shopping with us!</p>
+    </div>
+
+    <div class="invoice-details">
+        <div>
+            <strong>Invoice To:</strong><br>
+            {{ bill.customer_name }}<br>
+            <br>
+            <strong>Payment Method:</strong> {{ bill.payment_method }}
+        </div>
+        <div style="text-align: right;">
+            <strong>Invoice #:</strong> {{ bill.invoice_number }}<br>
+            <strong>Date:</strong> {{ bill.date.strftime('%Y-%m-%d %H:%M') }}
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in bill.items %}
+            <tr>
+                <td>{{ item.product_name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>₹{{ "%.2f"|format(item.price) }}</td>
+                <td>₹{{ "%.2f"|format(item.price * item.quantity) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="total-section">
+        <div class="total-row">
+            <span>Subtotal:</span>
+            <span>₹{{ "%.2f"|format(bill.subtotal) }}</span>
+        </div>
+        <div class="total-row">
+            <span>Tax (5%):</span>
+            <span>₹{{ "%.2f"|format(bill.tax_amount) }}</span>
+        </div>
+        <div class="total-row" style="color: #ef4444;">
+            <span>Discount:</span>
+            <span>-₹{{ "%.2f"|format(bill.discount_amount) }}</span>
+        </div>
+        <div class="total-row grand-total">
+            <span>Grand Total:</span>
+            <span>₹{{ "%.2f"|format(bill.grand_total) }}</span>
+        </div>
+    </div>
+
+    <div style="margin-top: 3rem; text-align: center;">
+        <a href="javascript:window.print()" class="print-btn">Print Invoice</a>
+        <a href="{{ url_for('dashboard') }}" class="print-btn"
+            style="background-color: #6b7280; margin-left: 10px;">Back to Dashboard</a>
+    </div>
+</body>
+
+</html>

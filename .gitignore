@@ -1,5 +1,11 @@
 __pycache__/
 *.pyc
-*.db
+*.pyo
+*.pyd
+.Python
+env/
+venv/
 .env
-.vscode/
+billing.db
+*.db
+.DS_Store

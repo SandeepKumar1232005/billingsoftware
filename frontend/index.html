@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing Software | Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <i class="fa-solid fa-layer-group logo-icon"></i>
+                <h2>BillFlow</h2>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item active">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="billing.html" class="nav-item">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span>Billing</span>
+                </a>
+                <a href="products.html" class="nav-item">
+                    <i class="fa-solid fa-box-open"></i>
+                    <span>Products</span>
+                </a>
+                <a href="customers.html" class="nav-item">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Customers</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="user-profile-mini">
+                <div class="avatar">AD</div>
+                <div class="user-info">
+                    <p class="name">Admin User</p>
+                    <p class="role">Manager</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search for invoices, products...">
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn"><i class="fa-regular fa-bell"></i></button>
+                    <button class="btn-primary"><i class="fa-solid fa-plus"></i> New Invoice</button>
+                </div>
+            </header>
+
+            <!-- Dynamic Views -->
+            <div id="dashboard-view" class="view-section active">
+                <div class="welcome-banner">
+                    <h1>Welcome back, Admin! 👋</h1>
+                    <p>Here's what's happening with your store today.</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="icon-box blue"><i class="fa-solid fa-wallet"></i></div>
+                        <div class="stat-info">
+                            <h3>Total Sales</h3>
+                            <p class="value">$12,450.00</p>
+                            <span class="trend up"><i class="fa-solid fa-arrow-up"></i> +15%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-box purple"><i class="fa-solid fa-receipt"></i></div>
+                        <div class="stat-info">
+                            <h3>Invoices</h3>
+                            <p class="value">45</p>
+                            <span class="trend up"><i class="fa-solid fa-arrow-up"></i> +8%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-box orange"><i class="fa-solid fa-box"></i></div>
+                        <div class="stat-info">
+                            <h3>Products</h3>
+                            <p class="value">1,204</p>
+                            <span class="trend down"><i class="fa-solid fa-arrow-down"></i> -2%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-activity">
+                    <h2>Recent Transactions</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Invoice ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#INV-001</td>
+                                    <td>John Doe</td>
+                                    <td>Oct 24, 2023</td>
+                                    <td>$120.50</td>
+                                    <td><span class="badge paid">Paid</span></td>
+                                </tr>
+                                <tr>
+                                    <td>#INV-002</td>
+                                    <td>Jane Smith</td>
+                                    <td>Oct 24, 2023</td>
+                                    <td>$85.00</td>
+                                    <td><span class="badge paid">Paid</span></td>
+                                </tr>
+                                <tr>
+                                    <td>#INV-003</td>
+                                    <td>Mike Johnson</td>
+                                    <td>Oct 23, 2023</td>
+                                    <td>$240.00</td>
+                                    <td><span class="badge pending">Pending</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</body>
+
+</html>

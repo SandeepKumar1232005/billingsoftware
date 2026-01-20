@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 style="margin-bottom: 2rem;">Dashboard</h1>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>Total Sales</h3>
+        <div class="value">₹{{ "%.2f"|format(total_sales) }}</div>
+    </div>
+    <div class="stat-card">
+        <h3>Total Orders</h3>
+        <div class="value">{{ bill_count }}</div>
+    </div>
+    <div class="stat-card">
+        <h3>Products in Stock</h3>
+        <div class="value">{{ product_count }}</div>
+    </div>
+</div>
+
+<h2 style="margin-top: 2rem;">Recent Transactions</h2>
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Bill ID</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bill in recent_bills %}
+            <tr>
+                <td>{{ bill.invoice_number }}</td>
+                <td>{{ bill.customer_name }}</td>
+                <td>{{ bill.date.strftime('%Y-%m-%d') }}</td>
+                <td>₹{{ "%.2f"|format(bill.grand_total) }}</td>
+                <td><a href="{{ url_for('invoice', id=bill.id) }}" style="color: var(--primary);">View</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing Software | Billing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <i class="fa-solid fa-layer-group logo-icon"></i>
+                <h2>BillFlow</h2>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="billing.html" class="nav-item active">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span>Billing</span>
+                </a>
+                <a href="products.html" class="nav-item">
+                    <i class="fa-solid fa-box-open"></i>
+                    <span>Products</span>
+                </a>
+                <a href="customers.html" class="nav-item">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Customers</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="user-profile-mini">
+                <div class="avatar">AD</div>
+                <div class="user-info">
+                    <p class="name">Admin User</p>
+                    <p class="role">Manager</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search products...">
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn"><i class="fa-regular fa-bell"></i></button>
+                    <button class="btn-primary"><i class="fa-solid fa-print"></i> Print Invoice</button>
+                </div>
+            </header>
+
+            <!-- Billing Section -->
+            <div class="view-section active">
+                <div class="welcome-banner">
+                    <h1>New Invoice</h1>
+                    <p>Create a new transaction.</p>
+                </div>
+
+                <div class="billing-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+                    <!-- Product Entry -->
+                    <div class="card"
+                        style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color);">
+                        <h2 style="font-size: 1.1rem; margin-bottom: 1rem;">Add Items</h2>
+                        <div style="display: flex; gap: 10px; margin-bottom: 1rem;">
+                            <input type="text" placeholder="Product Name or ID"
+                                style="flex: 1; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 6px;">
+                            <input type="number" placeholder="Qty"
+                                style="width: 80px; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 6px;">
+                            <button class="btn-primary">Add</button>
+                        </div>
+
+                        <table style="margin-top: 1rem;">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Qty</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Wireless Mouse</td>
+                                    <td>2</td>
+                                    <td>$25.00</td>
+                                    <td>$50.00</td>
+                                    <td style="text-align: right; color: #ef4444; cursor: pointer;"><i
+                                            class="fa-solid fa-trash"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>USB C Cable</td>
+                                    <td>1</td>
+                                    <td>$15.00</td>
+                                    <td>$15.00</td>
+                                    <td style="text-align: right; color: #ef4444; cursor: pointer;"><i
+                                            class="fa-solid fa-trash"></i></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Summary -->
+                    <div class="card"
+                        style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); height: fit-content;">
+                        <h2 style="font-size: 1.1rem; margin-bottom: 1rem;">Summary</h2>
+
+                        <div
+                            style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; color: var(--text-muted);">
+                            <span>Subtotal</span>
+                            <span>$65.00</span>
+                        </div>
+                        <div
+                            style="display: flex; justify-content: space-between; margin-bottom: 1rem; color: var(--text-muted);">
+                            <span>Tax (10%)</span>
+                            <span>$6.50</span>
+                        </div>
+                        <div style="border-top: 1px solid var(--border-color); margin-bottom: 1rem;"></div>
+                        <div
+                            style="display: flex; justify-content: space-between; margin-bottom: 1.5rem; font-weight: 700; font-size: 1.25rem;">
+                            <span>Total</span>
+                            <span>$71.50</span>
+                        </div>
+
+                        <button class="btn-primary" style="width: 100%; justify-content: center;">Checkout</button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 style="margin-bottom: 2rem;">Sales History</h1>
+
+<div class="stats-grid">
+    <div class="stat-card" style="background: #e0f2fe;">
+        <h3>Total Revenue</h3>
+        <div class="value" style="color: #0284c7;">₹{{ "%.2f"|format(total_revenue) }}</div>
+    </div>
+</div>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Invoice No</th>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Payment</th>
+                <th>Total</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bill in bills %}
+            <tr>
+                <td>{{ bill.invoice_number }}</td>
+                <td>{{ bill.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ bill.customer_name }}</td>
+                <td>{{ bill.payment_method }}</td>
+                <td>₹{{ "%.2f"|format(bill.grand_total) }}</td>
+                <td><a href="{{ url_for('invoice', id=bill.id) }}" class="btn-primary"
+                        style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; text-decoration: none;">View</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

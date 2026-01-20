@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BillFlow | Supermarket Billing</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">BillFlow</div>
+            <nav>
+                <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
+                <a href="{{ url_for('products') }}" class="nav-link">Products</a>
+                <a href="{{ url_for('billing') }}" class="nav-link">Billing</a>
+                <a href="{{ url_for('sales_history') }}" class="nav-link">Sales History</a>
+                <a href="{{ url_for('logout') }}" class="nav-link" style="margin-top: auto; color: #f87171;">Logout</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+
+</html>
