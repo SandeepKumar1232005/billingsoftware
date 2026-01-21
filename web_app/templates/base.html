@@ -13,10 +13,13 @@
         <aside class="sidebar">
             <div class="logo">BillFlow</div>
             <nav>
+                {% if session.get('role') == 'admin' %}
                 <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
+                <a href="{{ url_for('sales_history') }}" class="nav-link">Sales History</a>
+                {% elif session.get('role') == 'staff' %}
                 <a href="{{ url_for('products') }}" class="nav-link">Products</a>
                 <a href="{{ url_for('billing') }}" class="nav-link">Billing</a>
-                <a href="{{ url_for('sales_history') }}" class="nav-link">Sales History</a>
+                {% endif %}
                 <a href="{{ url_for('logout') }}" class="nav-link" style="margin-top: auto; color: #f87171;">Logout</a>
             </nav>
         </aside>

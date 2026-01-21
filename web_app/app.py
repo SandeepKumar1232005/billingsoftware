@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, abort
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import os
+from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_change_this_in_production'
@@ -19,6 +20,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
+    role = db.Column(db.String(20), nullable=False, default='staff') # 'admin' or 'staff'
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -47,13 +49,46 @@ class BillItem(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False) # Price at time of sale
 
+# --- Decorators ---
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'role' not in session or session['role'] != 'admin':
+            flash('Access Denied: Admins only', 'error')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def staff_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'role' not in session or session['role'] != 'staff':
+            # Optionally allow admin to access staff pages too, or restrict strictly.
+            # Based on requirements: "Billing staff will have... Admin can monitor..."
+            # Strict separation requested by user prompt implication.
+            flash('Access Denied: Staff only', 'error')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 # --- Routes ---
 
 # Authentication
 @app.route('/')
 def login():
     if 'user_id' in session:
-        return redirect(url_for('dashboard'))
+        if session.get('role') == 'admin':
+            return redirect(url_for('dashboard'))
+        elif session.get('role') == 'staff':
+            return redirect(url_for('billing'))
     return render_template('login.html')
 
 @app.route('/login_post', methods=['POST'])
@@ -66,21 +101,26 @@ def login_post():
     if user and check_password_hash(user.password, password):
         session['user_id'] = user.id
         session['username'] = user.username
-        return redirect(url_for('dashboard'))
+        session['role'] = user.role
+        
+        if user.role == 'admin':
+            return redirect(url_for('dashboard'))
+        else:
+            return redirect(url_for('billing'))
     else:
         flash('Invalid Credentials', 'error')
         return redirect(url_for('login'))
 
 @app.route('/logout')
 def logout():
-    session.pop('user_id', None)
+    session.clear()
     return redirect(url_for('login'))
 
-# Dashboard
+# Dashboard (Admin Only)
 @app.route('/dashboard')
+@login_required
+@admin_required
 def dashboard():
-    if 'user_id' not in session: return redirect(url_for('login'))
-    
     product_count = Product.query.count()
     bill_count = Bill.query.count()
     total_sales = db.session.query(db.func.sum(Bill.grand_total)).scalar() or 0
@@ -93,17 +133,27 @@ def dashboard():
                            total_sales=total_sales,
                            recent_bills=recent_bills)
 
-# Product Management
+# Sales History (Admin Only)
+@app.route('/sales_history')
+@login_required
+@admin_required
+def sales_history():
+    bills = Bill.query.order_by(Bill.date.desc()).all()
+    total_revenue = sum(b.grand_total for b in bills)
+    return render_template('sales_history.html', bills=bills, total_revenue=total_revenue)
+
+# Product Management (Staff Only)
 @app.route('/products')
+@login_required
+@staff_required
 def products():
-    if 'user_id' not in session: return redirect(url_for('login'))
     all_products = Product.query.all()
     return render_template('products.html', products=all_products)
 
 @app.route('/add_product', methods=['POST'])
+@login_required
+@staff_required
 def add_product():
-    if 'user_id' not in session: return redirect(url_for('login'))
-    
     name = request.form['name']
     category = request.form['category']
     price = float(request.form['price'])
@@ -116,16 +166,18 @@ def add_product():
     return redirect(url_for('products'))
 
 @app.route('/delete_product/<int:id>')
+@login_required
+@staff_required
 def delete_product(id):
-    if 'user_id' not in session: return redirect(url_for('login'))
     product = Product.query.get_or_404(id)
     db.session.delete(product)
     db.session.commit()
     return redirect(url_for('products'))
 
 @app.route('/edit_product/<int:id>', methods=['GET', 'POST'])
+@login_required
+@staff_required
 def edit_product(id):
-    if 'user_id' not in session: return redirect(url_for('login'))
     product = Product.query.get_or_404(id)
     
     if request.method == 'POST':
@@ -140,17 +192,18 @@ def edit_product(id):
         
     return render_template('edit_product.html', product=product)
 
-# Billing System
+# Billing System (Staff Only)
 @app.route('/billing')
+@login_required
+@staff_required
 def billing():
-    if 'user_id' not in session: return redirect(url_for('login'))
     products = Product.query.all()
     return render_template('billing.html', products=products)
 
 @app.route('/create_bill', methods=['POST'])
+@login_required
+@staff_required
 def create_bill():
-    if 'user_id' not in session: return redirect(url_for('login'))
-    
     customer_name = request.form['customer_name']
     product_ids = request.form.getlist('product_id[]')
     quantities = request.form.getlist('quantity[]')
@@ -234,31 +287,33 @@ def create_bill():
     return redirect(url_for('invoice', id=new_bill.id))
 
 @app.route('/invoice/<int:id>')
+@login_required
 def invoice(id):
-    if 'user_id' not in session: return redirect(url_for('login'))
+    # Invoice accessible by both roles ideally, or restrict if needed.
+    # Letting both view invoice receipt.
     bill = Bill.query.get_or_404(id)
     return render_template('invoice.html', bill=bill)
-
-@app.route('/sales_history')
-def sales_history():
-    if 'user_id' not in session: return redirect(url_for('login'))
-    
-    bills = Bill.query.order_by(Bill.date.desc()).all()
-    total_revenue = sum(b.grand_total for b in bills)
-    
-    return render_template('sales_history.html', bills=bills, total_revenue=total_revenue)
 
 # Initial Setup
 def init_db():
     with app.app_context():
         db.create_all()
-        # Create default admin if not exists
+        
+        # Create default admin
         if not User.query.filter_by(username='admin').first():
             hashed_pw = generate_password_hash('admin123')
-            admin = User(username='admin', password=hashed_pw)
+            admin = User(username='admin', password=hashed_pw, role='admin')
             db.session.add(admin)
-            db.session.commit()
             print("Default admin created (admin/admin123)")
+
+        # Create default staff
+        if not User.query.filter_by(username='staff').first():
+            hashed_pw = generate_password_hash('staff123')
+            staff = User(username='staff', password=hashed_pw, role='staff')
+            db.session.add(staff)
+            print("Default staff created (staff/staff123)")
+            
+        db.session.commit()
 
 if __name__ == '__main__':
     if not os.path.exists('billing.db'):
