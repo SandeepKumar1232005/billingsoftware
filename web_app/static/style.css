@@ -321,3 +321,117 @@ tr:hover {
     color: #555;
     background: white;
 }
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Apply Animations */
+body {
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+.login-box {
+    animation: slideInDown 0.8s ease-out;
+}
+
+.stat-card,
+.table-container,
+.invoice-box {
+    animation: slideInUp 0.6s ease-out;
+}
+
+/* Staggered animation for cards */
+.stat-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.stat-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.stat-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.stat-card:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+/* Interactive Elements */
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.nav-link {
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    padding-left: 1.5rem;
+    /* Enhanced hover effect */
+}
+
+input:focus,
+select:focus {
+    transition: all 0.3s ease;
+    transform: scale(1.01);
+}
+
+.flash {
+    animation: slideInDown 0.5s ease-out;
+}
