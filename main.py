@@ -6,7 +6,7 @@ class BillingApp:
     def __init__(self, root):
         self.root = root
         self.root.geometry("1350x700+0+0")
-        self.root.title("Billing Software | Developed by Antigravity")
+        self.root.title("Billing Software")
         self.root.config(bg="white")
         
         # Initialize Database
