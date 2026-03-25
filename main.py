@@ -9,6 +9,7 @@ class BillingApp:
         self.root.title("Billing Software")
         self.root.config(bg="white")
         
+        
         # Initialize Database
         database.init_db()
         
